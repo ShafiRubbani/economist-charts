@@ -6,8 +6,35 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE)
+
+library(ggplot2)
+library(janitor)
+library(tidyverse)
 ```
+
+```{r download_data}
+download.file("http://infographics.economist.com/databank/Economist_eu-balance.csv",
+              destfile = "Economist_eu-balance.csv",
+              mode = "wb")
+
+eu_balance <- read_csv("Economist_eu-balance.csv", skip = 1) 
+
+eu_balance_account <- eu_balance %>% 
+  gather(key = "year", value = "account_balance", `2009`:`2015`) %>% 
+  mutate(year = as.numeric(year)) %>% 
+  select(Country, year, account_balance)
+
+eu_balance_budget <- eu_balance %>% 
+  gather(key = "year", value = "budget_balance", `2009_1`:`2015_1`) %>% 
+  select(Country, year, budget_balance) %>% 
+  mutate(year = as.numeric(substring(year, 1, 4)))
+
+eu_balance_all <- eu_balance_account %>% 
+  full_join(eu_balance_budget) %>% 
+  gather(key = "balance_type", value = "balance", account_balance, budget_balance) %>%   clean_names()
+```
+
 
 ## R Markdown
 
