@@ -9,11 +9,12 @@ output: html_document
 knitr::opts_chunk$set(echo = FALSE)
 
 library(ggplot2)
+library(ggthemes)
 library(janitor)
 library(tidyverse)
 ```
 
-```{r download_data}
+```{r download_data, cache=TRUE}
 download.file("http://infographics.economist.com/databank/Economist_eu-balance.csv",
               destfile = "Economist_eu-balance.csv",
               mode = "wb")
@@ -36,7 +37,17 @@ eu_balance_all <- eu_balance_account %>%
 ```
 
 ```{r balance_plot}
-eu_balance_all %>% 
+plot_prep <- eu_balance_all %>% 
+  filter(country %in% c("Austria",
+                        "Belgium",
+                        "France",
+                        "Germany",
+                        "Greece",
+                        "Ireland",
+                        "Italy",
+                        "Netherlands",
+                        "Portugal",
+                        "Spain")) %>% 
   mutate(country = fct_collapse(country,
                                 "Germany" = "Germany",
                                 "Greece" = "Greece",
@@ -46,11 +57,24 @@ eu_balance_all %>%
   mutate(country = fct_collapse(country,
                                 "Others" = "Other",
                                 group_other = FALSE)) %>% 
-  mutate(balance = balance / 1000) %>% 
+  mutate(balance_type = fct_relevel(balance_type, "budget_balance", "account_balance")) %>% 
+  mutate(balance_type = fct_collapse(balance_type,
+                                     "Current-account Balance" = "account_balance",
+                                     "Budget Balance" = "budget_balance")) %>% 
+  mutate(balance = balance / 1000) 
+
+#eu_balance_plot <- 
+plot_prep %>% 
   ggplot(aes(x = year, y = balance, fill = country)) +
   geom_col() +
-  facet_wrap(~balance_type)
-
+  facet_wrap(~balance_type, scales = "free") +
+  scale_y_continuous(position = "right") +
+  labs(title = "Surfeit of surpluses",
+       subtitle = "Euro-area €bn",
+       caption = "Source: Eurostat",
+       y = NULL) +
+  theme_economist() +
+  scale_fill_economist()
 ```
 
 
