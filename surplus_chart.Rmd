@@ -47,16 +47,15 @@ plot_prep <- eu_balance_all %>%
                         "Italy",
                         "Netherlands",
                         "Portugal",
-                        "Spain")) %>% 
+                        "Spain")) %>%
   mutate(country = fct_collapse(country,
-                                "Germany" = "Germany",
-                                "Greece" = "Greece",
-                                "Netherlands" = "Netherlands",
-                                "Spain" = "Spain",
-                                group_other = TRUE)) %>% 
-  mutate(country = fct_collapse(country,
-                                "Others" = "Other",
-                                group_other = FALSE)) %>% 
+                                "Others" = c("Austria",
+                                             "Belgium",
+                                             "France",
+                                             "Ireland",
+                                             "Italy",
+                                             "Portugal"),
+                                group_other = FALSE)) %>%
   mutate(balance_type = fct_relevel(balance_type, "budget_balance", "account_balance")) %>% 
   mutate(balance_type = fct_collapse(balance_type,
                                      "Current-account Balance" = "account_balance",
