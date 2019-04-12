@@ -60,7 +60,7 @@ plot_prep <- eu_balance_all %>%
   mutate(balance_type = fct_collapse(balance_type,
                                      "Current-account Balance" = "account_balance",
                                      "Budget Balance" = "budget_balance")) %>% 
-  mutate(balance = balance / 1000) 
+  mutate(balance = balance / 1000)
 
 #eu_balance_plot <- 
 plot_prep %>% 
